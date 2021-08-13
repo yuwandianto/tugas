@@ -8,6 +8,7 @@ class Admin extends CI_Controller
     {
         parent::__construct();
         $this->load->library('form_validation');
+        $this->load->model('model_api', 'api');
     }
 
 
@@ -113,19 +114,33 @@ class Admin extends CI_Controller
 
     public function proseskirim()
     {
+        /**
+         * Ambil data pesan
+         * Tampilkan satu data jika ada nomor hp lebih dari satu
+         * Urutkan berdasarkan id nya
+         */
         $this->db->order_by('id', 'asc');
         $this->db->group_by('hp');
         $dt = $this->db->get('data_siswa')->result();
 
+        /**
+         * Siapkan 2 data untuk di kirim ke API
+         * 1 data nomor hp
+         * 2 data pesan
+         * masukkan 2 data tersebut dalam satu array
+         */
         $data = [];
         foreach ($dt as $dt) {
-            # code...
+
             $this->db->order_by('data_siswa.id', 'asc');
             $this->db->where('hp', $dt->hp);
             $this->db->join('data_tugas', 'data_tugas.id = data_siswa.tugas', 'left');
             $dat = $this->db->get('data_siswa')->result();
+
+            // siapkan data nomor hp
             $hpne = $dt->hp;
 
+            // siapkan data pesan untuk masing-masing nomor hp
             $t = $dt->nama . ' kelas ' . $dt->kelas . '
 ';
             $t .= 'Mapel : PJOK 
@@ -133,9 +148,10 @@ class Admin extends CI_Controller
 ';
             $t .= 'informasi untuk tugas kamu adalah sebagai berikut :
 ';
+            // Ambil semua pesan jika ada lebih dari satu pesan untuk nomor hp yang sama
             foreach ($dat as $value) {
-                # code...
-                $t .= $value->keterangan . '
+
+                $t .= '- ' . $value->keterangan . '
 ';
             }
             array_push($data, ['pesan' => $t, 'hp' => $hpne]);
@@ -144,10 +160,13 @@ class Admin extends CI_Controller
 
         $curl = curl_init();
 
+        // siapkan array untuk menampung respon dari API
+        $c = [];
+
         foreach ($data as $key) {
             # code...
             curl_setopt_array($curl, array(
-                CURLOPT_URL => 'https://wapi-yuwan.herokuapp.com/send-message',
+                CURLOPT_URL => $this->api->api_url() . 'send-message',
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING => '',
                 CURLOPT_MAXREDIRS => 10,
@@ -161,11 +180,20 @@ class Admin extends CI_Controller
                 ),
             ));
 
-            curl_exec($curl);
+            // curl_exec($curl);
+            $response = json_decode(curl_exec($curl));
             sleep(15);
+
+            if ($response->message) {
+                # code...
+                array_push($c, $response->message);
+            }
         }
 
         curl_close($curl);
+
+        $this->session->set_flashdata('hasil', $c);
+        redirect('admin/kirim');
     }
 
     function hapus_pesan($id)
@@ -293,6 +321,159 @@ class Admin extends CI_Controller
         $this->load->helper('download');
         $data = file_get_contents('./assets/data_kelas.xlsx');
         force_download('data_kelas.xlsx', $data);
+    }
+
+    public function baca_pesan()
+    {
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $this->api->api_url() . 'get-activeChat',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json'
+            ),
+        ));
+
+
+        $data['res'] = json_decode(curl_exec($curl));
+
+        curl_close($curl);
+
+        $this->load->view('layout/meta', $data);
+        $this->load->view('layout/navbar');
+        $this->load->view('baca');
+        $this->load->view('layout/script');
+    }
+
+    function hapus_pesan_wa($number)
+    {
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $this->api->api_url() . 'delete-message',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => 'number=' . $number,
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/x-www-form-urlencoded'
+            ),
+        ));
+
+        $response = json_decode(curl_exec($curl));
+
+        curl_close($curl);
+
+        if ($response->status == '1') {
+            $this->session->set_flashdata('pesan', 'Pesan berhasil dihapus');
+            redirect('admin/baca_pesan');
+        } else {
+            $this->session->set_flashdata('pesan', 'Pesan gagal dihapus');
+            redirect('admin/baca_pesan');
+        }
+    }
+
+    function baca_pesan_wa($number)
+    {
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $this->api->api_url() . 'fetch-message',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => 'number=' . $number,
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/x-www-form-urlencoded'
+            ),
+        ));
+
+        $response = json_decode(curl_exec($curl));
+
+        curl_close($curl);
+
+        $data['res'] = $response->response;
+        // echo '<pre>';
+        // var_dump($data['res']);
+        // die;
+
+        $this->load->view('layout/meta', $data);
+        $this->load->view('layout/navbar');
+        $this->load->view('baca_pesan_wa');
+        $this->load->view('layout/script');
+    }
+
+    function balas_pesan()
+    {
+        $no = $this->input->post('no');
+        $text = $this->input->post('text');
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $this->api->api_url() . 'send-message',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => 'number=' . $no . '&message=' . $text,
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/x-www-form-urlencoded'
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+        redirect('admin/baca_pesan_wa/' . $no);
+    }
+
+    function hapus_semua_pesan_wa()
+    {
+        $nomor = $this->input->post('nomor');
+
+        $curl = curl_init();
+        foreach ($nomor as $no) {
+
+            $nom = explode('-', $no);
+
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => $this->api->api_url() . 'delete-message',
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS => 'number=' . $nom[0],
+                CURLOPT_HTTPHEADER => array(
+                    'Content-Type: application/x-www-form-urlencoded'
+                ),
+            ));
+
+            curl_exec($curl);
+        }
+        curl_close($curl);
+        redirect('admin/baca_pesan');
     }
 }
 

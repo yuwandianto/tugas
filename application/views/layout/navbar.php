@@ -15,6 +15,9 @@
             <li class="nav-item <?= ($this->uri->segment(2) == 'kirim' ? 'active' : ''); ?>">
                 <a class="nav-link" href="<?= base_url('index.php/admin/kirim'); ?>">Kirim Pesan</a>
             </li>
+            <li class="nav-item <?= ($this->uri->segment(2) == 'baca_pesan' ? 'active' : ''); ?>">
+                <a class="nav-link" href="<?= base_url('index.php/admin/baca_pesan'); ?>">Baca Pesan</a>
+            </li>
             <li class="nav-item">
                 <a class="nav-link" href="javascript:void(0)" data-toggle="modal" data-target="#imporKelas">Import Kelas</a>
             </li>
