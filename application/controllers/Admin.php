@@ -17,6 +17,23 @@ class Admin extends CI_Controller
         $data['kelas'] = $this->db->get('data_kelas')->result();
         $data['tugas'] = $this->db->get('data_tugas')->result();
 
+        $data['api'] = $this->db->get('data_api')->row()->url;
+        $data['versi'] = $this->db->get('data_api')->row()->versi;
+
+        //set map api url
+        $url = "http://localhost/versi.json";
+
+        //call api
+        $json = file_get_contents($url);
+        $js = json_decode($json);
+
+        $versi = '';
+        foreach ($js as $key) {
+            # code...
+            $versi .= $key->versi;
+        }
+        $data['new_versi'] = $versi;
+
         $this->load->view('layout/meta', $data);
         $this->load->view('layout/navbar');
         $this->load->view('utama');
@@ -409,7 +426,7 @@ class Admin extends CI_Controller
 
         $data['res'] = $response->response;
         // echo '<pre>';
-        // var_dump($data['res']);
+        // print_r($data['res']);
         // die;
 
         $this->load->view('layout/meta', $data);
@@ -474,6 +491,18 @@ class Admin extends CI_Controller
         }
         curl_close($curl);
         redirect('admin/baca_pesan');
+    }
+
+    function update_api()
+    {
+        $api = $this->input->post('api');
+
+        $object = [
+            'url' => $api
+        ];
+        $this->db->where('id', 1);
+        $this->db->update('data_api', $object);
+        redirect('');
     }
 }
 

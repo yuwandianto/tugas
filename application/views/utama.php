@@ -1,4 +1,4 @@
-    <div class="container mt-2">
+    <div class="container col-lg-8 mt-2">
         <form action="<?= base_url('index.php/admin/tampil'); ?>" method="post">
             <div class="row">
                 <div class="col-md-4">
@@ -10,7 +10,7 @@
                         <?php endforeach; ?>
                     </select>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-5">
                     <label for="tugas">Pilih Pesan</label>
                     <select name="tugas" id="tugas" class="form-control" required>
                         <option value="">-- Pilih Pesan --</option>
@@ -27,3 +27,10 @@
             </div>
         </form>
     </div>
+    <?php if ($versi != $new_versi) { ?>
+        <footer class="versi">
+            <div class="container">
+                <marquee behavior="" direction="">Versi saat ini adalah <?= $versi; ?>. Silakan lakukan update untuk mendapatkan versi <?= $new_versi; ?></marquee>
+            </div>
+        </footer>
+    <?php }; ?>

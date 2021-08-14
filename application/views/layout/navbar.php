@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="#">WA-Notification</a>
+    <a class="navbar-brand" href="javascript:void(0)">WA-Notification</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -16,7 +16,7 @@
                 <a class="nav-link" href="<?= base_url('index.php/admin/kirim'); ?>">Kirim Pesan</a>
             </li>
             <li class="nav-item <?= ($this->uri->segment(2) == 'baca_pesan' ? 'active' : ''); ?>">
-                <a class="nav-link" href="<?= base_url('index.php/admin/baca_pesan'); ?>">Baca Pesan</a>
+                <a class="nav-link" href="<?= base_url('index.php/admin/baca_pesan'); ?>">Percakapan WA</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="javascript:void(0)" data-toggle="modal" data-target="#imporKelas">Import Kelas</a>
@@ -26,10 +26,12 @@
             </li>
 
         </ul>
-        <form class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-        </form>
+        <?php if ($this->uri->segment(2) == '') : ?>
+            <form action="<?= base_url('index.php/admin/update_api'); ?>" method="post" class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" type="text" name="api" required value="<?= $api; ?>">
+                <button type="submit" class="btn btn-outline-success my-2 my-sm-0" type="submit">Simpan</button>
+            </form>
+        <?php endif; ?>
     </div>
 </nav>
 

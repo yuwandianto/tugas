@@ -1,11 +1,23 @@
-<div class="container">
-    <div class="my-3 p-3 col-md-10">
-        <h6 class="border-bottom border-gray pb-2 mb-0">Percakapan</h6>
+<div class="container d-flex justify-content-center">
+    <div class="my-3 p-3 col-md-8">
+        <h6 class="border-bottom border-gray pb-2 mb-0 text-center" style="font-size: 15pt;">Percakapan</h6>
         <?php foreach ($res as $r) : ?>
             <div class="media text-muted pt-3 <?= ($r->id->fromMe != 1) ? 'text-right' : ''; ?>">
 
                 <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
-                    <strong class="d-block text-danger"><?= '0' . substr(preg_replace("/[^0-9]/", "", $r->from), 2,); ?></strong>
+                    <strong class="d-block text-danger" style="margin: -12px 0px 10px 0px"><?= '0' . substr(preg_replace("/[^0-9]/", "", $r->from), 2,); ?>
+
+                        <?php if ($r->ack == 1) {
+                            echo '<span class="material-icons" style="font-size: 12pt; color:#e8301c">done</span>';
+                        } elseif ($r->ack == 2) {
+                            echo '<span class="material-icons" style="font-size: 12pt; color: #e8d71c">done_all</span>';
+                        } elseif ($r->ack == 3) {
+                            echo '<span class="material-icons" style="font-size: 12pt; color: #0560f2">done_all</span>';
+                        }; ?>
+
+                    </strong>
+
+
                     <?= str_replace(['"', '\r', '\n'], ['', '', '<br>'], (json_encode($r->body))); ?>
                 </p>
             </div>

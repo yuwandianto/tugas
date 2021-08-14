@@ -28,9 +28,9 @@
             foreach ($list as $list) : ?>
                 <tr>
                     <td><?= $no++; ?></td>
-                    <td><?= $list->nama; ?></td>
-                    <td><?= $list->kelas; ?></td>
-                    <td><?= $list->hp; ?></td>
+                    <td nowrap><?= strtoupper($list->nama); ?></td>
+                    <td nowrap><?= $list->kelas; ?></td>
+                    <td nowrap><?= $list->hp; ?></td>
                     <td><?= $list->keterangan; ?></td>
                     <td>
                         <a href="<?= base_url('index.php/admin/hapus_pesan_dikirim/') . $list->id; ?>" class="badge badge-warning" onclick="return confirm('Yakin akan menghapus data ini?')"> Hapus</a>
