@@ -1,6 +1,6 @@
 <footer class="footer" style="background-color: #c0edc5;">
     <div class="container">
-        <span class="text-muted">Copy Right 2021 - <a target="_blank" href="https://shop.yuwandianto.web.id/"> Yuwandianto</a> | Supported By : <a target="_blank" href="https://github.com/pedroslopez/whatsapp-web.js/"> whatsapp web js</a> - <a target="_blank" href="https://github.com/ngekoding/whatsapp-api-tutorial">Ngekoding</a> - <a target="_blank" href="https://getbootstrap.com/"> Bootstrap</a> | Versi 1.0.0 </span>
+        <span class="text-muted">Copy Right 2021 - <a target="_blank" href="https://shop.yuwandianto.web.id/"> Yuwandianto</a> | Supported By : <a target="_blank" href="https://github.com/pedroslopez/whatsapp-web.js/"> whatsapp web js</a> - <a target="_blank" href="https://github.com/ngekoding/whatsapp-api-tutorial">Ngekoding</a> - <a target="_blank" href="https://getbootstrap.com/"> Bootstrap</a> | Versi <?= $versi; ?> </span>
     </div>
 </footer>
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>

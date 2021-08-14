@@ -27,6 +27,7 @@
             </div>
         </form>
     </div>
+
     <?php if ($versi != $new_versi) { ?>
         <footer class="versi">
             <div class="container">

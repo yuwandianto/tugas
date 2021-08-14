@@ -21,7 +21,7 @@ class Admin extends CI_Controller
         $data['versi'] = $this->db->get('data_api')->row()->versi;
 
         //set map api url
-        $url = "http://localhost/versi.json";
+        $url = "https://yuwandianto.web.id/versi/wa_notif.json";
 
         //call api
         $json = file_get_contents($url);
@@ -45,6 +45,7 @@ class Admin extends CI_Controller
 
         $data['allkelas'] = $this->db->get('data_kelas')->result();
         $data['alltugas'] = $this->db->get('data_tugas')->result();
+        $data['versi'] = $this->db->get('data_api')->row()->versi;
 
         $kelas = $this->input->post('kelas', true);
 
@@ -110,6 +111,7 @@ class Admin extends CI_Controller
     public function pesan()
     {
         $data['pesan'] = $this->db->get('data_tugas')->result();
+        $data['versi'] = $this->db->get('data_api')->row()->versi;
 
         $this->load->view('layout/meta', $data);
         $this->load->view('layout/navbar');
@@ -122,6 +124,8 @@ class Admin extends CI_Controller
         $this->db->select('*, data_siswa.id as id');
         $this->db->join('data_tugas', 'data_tugas.id = data_siswa.tugas', 'left');
         $data['list'] = $this->db->get('data_siswa')->result();
+        $data['versi'] = $this->db->get('data_api')->row()->versi;
+
 
         $this->load->view('layout/meta', $data);
         $this->load->view('layout/navbar');
@@ -362,6 +366,8 @@ class Admin extends CI_Controller
         $data['res'] = json_decode(curl_exec($curl));
 
         curl_close($curl);
+        $data['versi'] = $this->db->get('data_api')->row()->versi;
+
 
         $this->load->view('layout/meta', $data);
         $this->load->view('layout/navbar');
@@ -428,6 +434,8 @@ class Admin extends CI_Controller
         // echo '<pre>';
         // print_r($data['res']);
         // die;
+        $data['versi'] = $this->db->get('data_api')->row()->versi;
+
 
         $this->load->view('layout/meta', $data);
         $this->load->view('layout/navbar');
