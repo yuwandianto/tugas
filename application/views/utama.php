@@ -1,3 +1,4 @@
+    <?php error_reporting(0); ?>
     <div class="container col-lg-8 mt-2">
         <form action="<?= base_url('index.php/admin/tampil'); ?>" method="post">
             <div class="row">
